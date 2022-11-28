@@ -1,0 +1,16 @@
+
+#spring:
+#  datasource:
+#    url: "jdbc:mysql://localhost:3306/wylee"
+#    username: "root"
+#    password: "qwerty1234"
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+
+# 메모리 모드로 DB 설정 (설정을 안해줘도 메모리 디비로 알아서 띄움)
+#  datasource:
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver

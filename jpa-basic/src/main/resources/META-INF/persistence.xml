@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="hello">
+<!--        <class>jpabook.jpashop.domain.Item</class>
+        <class>jpabook.jpashop.domain.Member</class>
+        <class>jpabook.jpashop.domain.Order</class>
+        <class>jpabook.jpashop.domain.OrderItem</class>
+
+        <class>연관관계매핑.Member2</class>
+        <class>연관관계매핑.Team2</class>
+        <class>연관관계매핑.onetoone.Locker</class>
+        <class>연관관계매핑.onetoone.Member3</class>
+        <class>연관관계매핑.manytomany.Member4</class>
+        <class>연관관계매핑.manytomany.Product4</class>
+        <class>연관관계매핑.ntomchange.Member5</class>
+        <class>연관관계매핑.ntomchange.Product5</class>
+        <class>연관관계매핑.ntomchange.MemberProduct5</class>-->
+
+<!--        <class>연관관계매핑.example3.Category</class>
+        <class>연관관계매핑.example3.Delivery</class>
+        <class>연관관계매핑.example3.Item</class>
+        <class>연관관계매핑.example3.Member</class>
+        <class>연관관계매핑.example3.Order</class>
+        <class>연관관계매핑.example3.OrderItem</class>-->
+
+<!--        <class>상속관계매핑.mapping.Item</class>
+        <class>상속관계매핑.mapping.Album</class>
+        <class>상속관계매핑.mapping.Book</class>
+        <class>상속관계매핑.mapping.Movie</class>-->
+
+<!--        <class>상속관계매핑.mappedsuperclass.Member</class>
+        <class>상속관계매핑.mappedsuperclass.Seller</class>-->
+
+<!--        <class>프록시와연관관계관리.proxy.Member</class>
+        <class>프록시와연관관계관리.proxy.Team</class>-->
+
+<!--        <class>프록시와연관관계관리.cascade.Child</class>
+        <class>프록시와연관관계관리.cascade.Parent</class>-->
+
+<!--        <class>값타입.embedded.Member</class>
+        <class>값타입.embedded.Address</class>
+        <class>값타입.embedded.Period</class>-->
+
+<!--        <class>값타입.collection.Address</class>
+        <class>값타입.collection.Member</class>
+        <class>값타입.collection.AddressEntity</class>-->
+
+        <class>객체지향쿼리언어.intro.Member</class>
+
+        <properties>
+            <!-- 필수 속성 -->
+            <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="root"/>
+            <property name="javax.persistence.jdbc.password" value="qwerty1234"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/wylee"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect"/>
+            <!-- 옵션 -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+        </properties>
+    </persistence-unit>
+</persistence>
