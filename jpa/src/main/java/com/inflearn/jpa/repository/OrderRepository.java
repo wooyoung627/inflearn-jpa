@@ -110,6 +110,11 @@ public class OrderRepository {
         return query.getResultList();
     }
 
+    public List<Order> findAll(){
+//        return em.createQuery("select o from Order o", Order.class).getResultList();
+        return em.createQuery("select o from Order o join fetch o.member m join fetch o.delivery d", Order.class).getResultList();
+    }
+
     public List<Order> findAllWithMemberDelivery() {
         return em.createQuery(
                 "select o from Order o" +
@@ -117,6 +122,24 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+    /**
+     * ToOne 관계를 모두 페치조인 (row수를 증가시키지 않으므로 페이징 쿼리에 영향을 주지 않는다.)
+     * 컬렉션은 지연 로딩으로 조회
+     * 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size(추천), @BatchSize 적용
+     * default_batch_fetch_size
+     * => in 쿼리로 컬렉션의 데이터를 미리 가져옴
+     */
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+                ).setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
 
 /*    public List<OrderSimpleQueryDto> findOrderDtos() {
         // new 명령어를 사용해서 JPQL의 결과를 DTO로 즉시 변환
@@ -127,4 +150,29 @@ public class OrderRepository {
                         " join o.delivery d", OrderSimpleQueryDto.class)
                 .getResultList();
     }*/
+
+    public List<Order> findAllWithItem() {
+        // 데이터가 뻥튀기 돼서 나옴-> join 된 데이터 모두 출력
+        /*
+        return em.createQuery(
+                "select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class)
+                .getResultList();
+        */
+
+        // distinct : sql에 distinct를 추가할뿐만 아니라 JPA에서 가져올때 Order가 같은값이면 중복을 걸러준다.
+        // 단점 : collection fetch 일시 페이징 불가능 (메모리에서 페이징 작업)
+        // 컬렉션 둘 이상에 페치조인 사용 X
+        return em.createQuery(
+                "select distinct o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
+
 }
