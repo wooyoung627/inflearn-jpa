@@ -1,8 +1,6 @@
 import jakarta.persistence.*;
 import jpql.*;
 
-import java.util.List;
-
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");

@@ -7,7 +7,7 @@ import com.inflearn.jpa.domain.OrderItem;
 import com.inflearn.jpa.domain.item.Item;
 import com.inflearn.jpa.domain.Member;
 import com.inflearn.jpa.repository.ItemRepository;
-import com.inflearn.jpa.repository.MemberRepository;
+import com.inflearn.jpa.repository.MemberRepositoryOld;
 import com.inflearn.jpa.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final MemberRepository memberRepository;
+    private final MemberRepositoryOld memberRepository;
     private final ItemRepository itemRepository;
 
     /**
@@ -67,7 +67,7 @@ public class OrderService {
      * 단순하게 화면 조회를 위한 기능이라면 컨트롤러에서 호출해도 o (단순 위임이라면)
      */
     public List<Order> findOrders(OrderSearch orderSearch){
-        return orderRepository.findAllByJpql(orderSearch);
+        return orderRepository.findAll(orderSearch);
     }
 
 }

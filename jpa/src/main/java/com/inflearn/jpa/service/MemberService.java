@@ -3,7 +3,6 @@ package com.inflearn.jpa.service;
 import com.inflearn.jpa.domain.Member;
 import com.inflearn.jpa.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +43,13 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public Member findOne(Long memberId){
-        return memberRepository.findOne(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     // Id 정도만 반환
     @Transactional
     public Long update(Long memberId, String name) {
-        Member member = memberRepository.findOne(memberId);
+        Member member = memberRepository.findById(memberId).get();
         member.change(name);
         return member.getId();
     }

@@ -1,7 +1,9 @@
 package com.inflearn.jpa.repository;
 
-import com.inflearn.jpa.domain.Member;
+import com.inflearn.jpa.domain.*;
 import com.inflearn.jpa.domain.Order;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -12,12 +14,20 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.inflearn.jpa.domain.QMember.*;
+import static com.inflearn.jpa.domain.QOrder.*;
+
 // repository는 순수한 entity를 조회하는데 쓴다.
 @Repository
-@RequiredArgsConstructor
 public class OrderRepository {
 
     private final EntityManager em;
+    private final JPAQueryFactory query;
+
+    public OrderRepository(EntityManager em) {
+        this.em = em;
+        this.query = new JPAQueryFactory(em);
+    }
 
     public void save(Order order){
         em.persist(order);
@@ -113,6 +123,29 @@ public class OrderRepository {
     public List<Order> findAll(){
 //        return em.createQuery("select o from Order o", Order.class).getResultList();
         return em.createQuery("select o from Order o join fetch o.member m join fetch o.delivery d", Order.class).getResultList();
+    }
+
+    public List<Order> findAll(OrderSearch orderSearch) {
+        return query
+                .select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()),
+                        nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(String memberName){
+        if(!StringUtils.hasText(memberName))
+            return null;
+        else return member.name.like(memberName);
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond){
+        if(statusCond == null){
+            return null;
+        }else return order.status.eq(statusCond);
     }
 
     public List<Order> findAllWithMemberDelivery() {

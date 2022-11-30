@@ -1,11 +1,10 @@
 package com.inflearn.jpa.service;
 
 import com.inflearn.jpa.domain.Member;
-import com.inflearn.jpa.repository.MemberRepository;
+import com.inflearn.jpa.repository.MemberRepositoryOld;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -20,7 +19,7 @@ class MemberServiceTest {
     @Autowired
     MemberService memberService;
     @Autowired
-    MemberRepository memberRepository;
+    MemberRepositoryOld memberRepository;
     @Autowired
     EntityManager em;
 
