@@ -48,3 +48,6 @@ out/
 ### VS Code ###
 */.vscode/
 .vscode/
+
+### h2 ###
+h2/
