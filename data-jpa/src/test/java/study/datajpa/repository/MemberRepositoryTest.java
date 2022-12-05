@@ -277,10 +277,47 @@ class MemberRepositoryTest {
         em.clear();
 
         // when
-        List<Member> members = memberRepository.findAll();
+//        List<Member> members = memberRepository.findMemberFetchJoin();
+        List<Member> members = memberRepository.findEntityGraphByUsername("member1");
         for (Member member : members) {
             System.out.println("member.getUsername() = " + member.getUsername());
+            System.out.println("member.getTeam().getClass() = " + member.getTeam().getClass());
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
         }
+    }
+
+    @Test
+    public void queryHint() {
+        // given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        // when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+    }
+
+    @Test
+    void lock() throws Exception {
+        // given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        // when
+        List<Member> result = memberRepository.findLockByUsername("member1");
+
+
+        // then
+    }
+
+    @Test
+    void callCustom() throws Exception {
+        List<Member> memberCustom = memberRepository.findMemberCustom();
     }
 }
