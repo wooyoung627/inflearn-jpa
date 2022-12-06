@@ -4,10 +4,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -319,5 +317,135 @@ class MemberRepositoryTest {
     @Test
     void callCustom() throws Exception {
         List<Member> memberCustom = memberRepository.findMemberCustom();
+    }
+
+    /**
+     * Criteria는 사용하지 않는 것이 좋다.
+     * 실무에서 사용하기엔 너무 복잡하고 유지보수가 쉽지 않음
+     * => 대신 QueryDSL을 사용하자
+     */
+    @Test
+    void specBasic() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        Specification<Member> spec = MemberSpec.username("m1").and(MemberSpec.teamName("teamA"));
+        List<Member> result = memberRepository.findAll(spec);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    /**
+     * Join이 해결이 안됨 (Left Join X)
+     * => QueryDSL
+     */
+    @Test
+    void queryByExample() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        // Probe 생성 (필드에 데이터가 있는 실제 도메인 객체)
+        Member member = new Member("m1");
+        Team team = new Team("teamA");
+        member.setTeam(team);
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("age");
+        Example<Member> example = Example.of(member, matcher);
+
+        List<Member> result = memberRepository.findAll(example);
+
+        // then
+        assertThat(result.get(0).getUsername()).isEqualTo("m1");
+    }
+
+    /**
+     * Projections - interface, class, join
+     *
+     * 프로젝션 대상이 root 엔티티면 유용하다.
+     * 프로젝션 대상이 root 엔티티를 넘어가면 JPQL SELECT 최적화가 안됨
+     * 복잡한 쿼리를 해결하기에는 한계가 있다.
+     * => QueryDSL을 사용하자
+     */
+    @Test
+    void projections() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 10, teamA);
+        Member m2 = new Member("m2", 20, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        List<NestedClosedProjections> result = memberRepository.findProjectionsByUsername("m1", NestedClosedProjections.class);
+
+        for (NestedClosedProjections nestedClosedProjections : result) {
+            System.out.println("nestedClosedProjections.username = " + nestedClosedProjections.getUsername());
+            System.out.println("nestedClosedProjections.team.name = " + nestedClosedProjections.getTeam().getName());
+        }
+        // then
+    }
+
+
+    /**
+     * 네이티브 쿼리는 사용하지 않는게 좋음! 어쩔 수 없을 경우 사용
+     *
+     * 반환타입의 제약
+     * - Sort 파라미터를 통한 정렬이 정상 동작 X
+     * 애플리케이션 로딩 시점에 문법 확인 불가
+     * 동적 쿼리 X
+     *
+     * => 네이티브 SQL을 DTO로 조회할 때는 JdbcTemplate or MyBatis 권장
+     */
+    @Test
+    void nativeQuery() throws Exception {
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 10, teamA);
+        Member m2 = new Member("m2", 20, teamA);
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+//        Member m11 = memberRepository.findByNativeQuery("m1");
+        Page<MemberProjection> result = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        List<MemberProjection> content = result.getContent();
+
+        for (MemberProjection memberProjection : content) {
+            System.out.println("memberProjection.username = " + memberProjection.getUsername());
+            System.out.println("memberProjection.teamName = " + memberProjection.getTeamName());
+        }
+
+
+        // then
     }
 }
