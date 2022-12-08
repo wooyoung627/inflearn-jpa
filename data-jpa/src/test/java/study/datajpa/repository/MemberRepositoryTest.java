@@ -437,7 +437,7 @@ class MemberRepositoryTest {
 
         // when
 //        Member m11 = memberRepository.findByNativeQuery("m1");
-        Page<MemberProjection> result = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        Page<MemberProjection> result = memberRepository.findByNativeProjection(PageRequest.of(1, 10));
         List<MemberProjection> content = result.getContent();
 
         for (MemberProjection memberProjection : content) {
